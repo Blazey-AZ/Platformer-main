@@ -1,0 +1,15 @@
+* Setup - // Done
+* Player - // Done
+* Gravity - // Done
+* Player movement - // Done
+* Platform = // Done
+* "Scroll" for background - // Done
+* Win Scenario - //
+* Image platforms - //
+* Parallax scroll - \\InProgress for dynamic objects like platforms and hills
+* Death pits - // Done
+* Level creation
+* Sprite Creation - //Done
+* Fine-tuning - // Done (For Now)
+
+* MORE TO DO
