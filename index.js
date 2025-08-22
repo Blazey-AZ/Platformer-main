@@ -101,6 +101,25 @@ class Platform {
     }
 }
 
+// Grass platform
+// This class will handle Grass platforms, their positions and drawings
+const grassPlatformImg = new Image();
+grassPlatformImg.src = './imgs/grassplatform.png';
+
+class GrassPlatform {
+    constructor({x, y})
+    {
+        this.position = {
+            x, y
+        }
+        this.width = grassPlatformImg.width
+        this.height = grassPlatformImg.height
+    }
+    draw() {
+        c.drawImage(grassPlatformImg, this.position.x, this.position.y, this.width, this.height)
+    }
+}
+
 // Background Class
 // This class will handle the background image, its position, and drawing
 const backgroundImg = new Image();
@@ -131,6 +150,12 @@ let platforms = [new Platform({x:-12, y:350}),
                 new Platform({x:4000, y:350}),
                 new Platform({x:5000, y:350}),
                 new Platform({x:6000, y:350}),]
+
+let grassplatforms = [new GrassPlatform({x:2480, y:70}),]
+                    //   new GrassPlatform({x:300, y:400}),
+                    //   new GrassPlatform({x:500, y:400}),
+                    //   new GrassPlatform({x:700, y:400}),
+                    //   new GrassPlatform({x:900, y:400}),]
 const keys = {
     right: {
         pressed: false
@@ -163,6 +188,13 @@ platforms = [new Platform({x:-12, y:350}),
             new Platform({x:4000, y:350}),
             new Platform({x:5000, y:350}),
             new Platform({x:6000, y:350}),]
+
+grassplatforms = [new GrassPlatform({x:2480, y:70}),]
+                    //   new GrassPlatform({x:300, y:400}),
+                    //   new GrassPlatform({x:500, y:400}),
+                    //   new GrassPlatform({x:700, y:400}),
+                    //   new GrassPlatform({x:900, y:400}),]
+
 background = new Background()
 
 scrollOffset = 0
@@ -180,6 +212,9 @@ function animate() {
     background.draw()
     platforms.forEach(platform => {
         platform.draw()
+    })
+    grassplatforms.forEach(grassplatform => {
+        grassplatform.draw()
     })
 
     // Determine if player is running or standing and set sprite accordingly
@@ -218,6 +253,10 @@ function animate() {
                 scrollOffset += 5
                 platform.position.x -= 5
             })
+            grassplatforms.forEach(grassplatform => {
+                scrollOffset += 5
+                grassplatform.position.x -= 5
+            })
         }
         if(keys.left.pressed)
         {
@@ -225,10 +264,14 @@ function animate() {
                 scrollOffset -= 5
                 platform.position.x += 5
             })
-        }
+            grassplatforms.forEach(grassplatform => {
+                scrollOffset -= 5
+                grassplatform.position.x += 5
+            })
+}
     }
 
-    // Platform collision detection
+    // Platform and grassplatform collision detection
     platforms.forEach(platform => {
         if(player.position.y + player.height <= platform.position.y 
         && player.position.y + player.height + player.velocity.y >= platform.position.y
@@ -240,6 +283,18 @@ function animate() {
         player.jumpCount = 0 // Reset jump count when landing on platform
     }
     })
+    grassplatforms.forEach(grassplatform => {
+    if(
+        player.position.y + player.height <= grassplatform.position.y 
+        && player.position.y + player.height + player.velocity.y >= grassplatform.position.y
+        && player.position.x + player.width >= grassplatform.position.x 
+        && player.position.x <= grassplatform.position.x + grassplatform.width 
+    )
+    {
+        player.velocity.y = 0
+        player.jumpCount = 0 // Reset jump count when landing on platform
+    }
+})
 
     // You win image
     const youwinImg = new Image();
