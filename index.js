@@ -5,6 +5,29 @@ canvas.width = 1280
 canvas.height = 576
 const gravity = .5
 
+// Background Music Setup
+// Place your audio file at ./audio/bgm.mp3 (or change the src below)
+const bgm = new Audio('./audio/bgm.mp3')
+const gameover = new Audio('./audio/gameover.mp3')
+const tryagain = new Audio('./audio/tryagain.mp3')
+bgm.loop = true
+bgm.volume = 0.4
+bgm.preload = 'auto'
+let bgmStarted = false
+
+function startBgmOnFirstInteraction() {
+    if (bgmStarted) return
+    bgm.play()
+        .then(() => { bgmStarted = true })
+        .catch(() => {
+            // Autoplay was blocked; will try again on the next interaction
+        })
+}
+// Start music on the first user interaction (required by most browsers)
+;['pointerdown', 'keydown', 'touchstart'].forEach(ev => {
+    window.addEventListener(ev, startBgmOnFirstInteraction, { once: false })
+})
+
 // Player Class
 // This class will handle the player character, its position, velocity, and drawing
 const playerImgRight = new Image();
@@ -303,13 +326,16 @@ function animate() {
     // Win scenario
     if(scrollOffset > 40000) {
     console.log('You win!')
-        c.drawImage(youwinImg, canvas.width / 2 - 200, canvas.height / 2 - 100, 400, 200);
+        bgm.volume = 0
+        gameover.play()
+        c.drawImage(youwinImg, 0, 0, canvas.width, canvas.height);
     }
     // Lose scenario
     if(player.position.y + 10 >= canvas.height) {
         console.log('You lose!')
         showLoseMessage = true
         loseMsgStart = performance.now()
+        tryagain.play()
         init()
     }
 
@@ -359,6 +385,23 @@ window.addEventListener('keydown', (event) => {
             player.currentSprite = player.sprites.run.right
             player.width = player.sprites.run.width
             player.height = player.sprites.run.height
+            break
+        // Audio controls
+        case 'm':
+            bgm.muted = !bgm.muted
+            break
+        case 'p':
+            if (bgm.paused) {
+                bgm.play().catch(() => {})
+            } else {
+                bgm.pause()
+            }
+            break
+        case 'ArrowUp':
+            bgm.volume = Math.min(1, +(bgm.volume + 0.05).toFixed(2))
+            break
+        case 'ArrowDown':
+            bgm.volume = Math.max(0, +(bgm.volume - 0.05).toFixed(2))
             break
     }
 })
