@@ -143,6 +143,11 @@ let background = new Background()
 // Scroll offset for win scenario
 let scrollOffset = 0
 
+// Lose message state
+let showLoseMessage = false
+let loseMsgStart = 0
+const loseMsgDuration = 2000
+
 // Tap tracking for jump
 // This will allow the player to jump twice in quick succession
 let jumpTapTimeout = null
@@ -248,15 +253,28 @@ function animate() {
     // Lose scenario
     if(player.position.y + 10 >= canvas.height) {
         console.log('You lose!')
+        showLoseMessage = true
+        loseMsgStart = performance.now()
         init()
-        //  c.fillStyle = 'black'
-        //  c.fillRect(0, 0, canvas.width, canvas.height)
-        //  c.font = '48px serif'
-        //  c.fillStyle = 'white'
-        //  c.fillText('You Lose!', canvas.width / 2 - 100, canvas.height / 2)
-        //  return
     }
-    
+
+    // Draw fading "Try again.." message
+    if (showLoseMessage) {
+        const elapsed = performance.now() - loseMsgStart
+        const alpha = Math.max(0, 1 - elapsed / loseMsgDuration)
+        if (alpha > 0) {
+            c.save()
+            c.globalAlpha = alpha
+            c.fillStyle = 'black'
+            c.font = '48px serif'
+            c.textAlign = 'center'
+            c.textBaseline = 'middle'
+            c.fillText('Try again..', canvas.width / 2, canvas.height / 2)
+            c.restore()
+        } else {
+            showLoseMessage = false
+        }
+    }
 }
 
 // Start the animation
